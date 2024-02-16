@@ -29,7 +29,7 @@ def write_version_to_file(version, target_file):
 
 if __name__ == '__main__':
     version = '0.1.0+%s' % get_git_commit_number()
-    write_version_to_file(version, 'ops/version.py')
+    write_version_to_file(version, 'cudaext/version.py')
 
     setup(
         name='cudaext',
@@ -45,7 +45,7 @@ if __name__ == '__main__':
         ext_modules=[
             make_cuda_ext(
                 name='iou3d_nms_cuda',
-                module='ops.iou3d_nms',
+                module='cudaext.ops.iou3d_nms',
                 sources=[
                     'src/iou3d_cpu.cpp',
                     'src/iou3d_nms_api.cpp',
@@ -55,7 +55,7 @@ if __name__ == '__main__':
             ),
             make_cuda_ext(
                 name='roiaware_pool3d_cuda',
-                module='ops.roiaware_pool3d',
+                module='cudaext.ops.roiaware_pool3d',
                 sources=[
                     'src/roiaware_pool3d.cpp',
                     'src/roiaware_pool3d_kernel.cu',
@@ -63,7 +63,7 @@ if __name__ == '__main__':
             ),
             make_cuda_ext(
                 name='roipoint_pool3d_cuda',
-                module='ops.roipoint_pool3d',
+                module='cudaext.ops.roipoint_pool3d',
                 sources=[
                     'src/roipoint_pool3d.cpp',
                     'src/roipoint_pool3d_kernel.cu',
@@ -71,7 +71,7 @@ if __name__ == '__main__':
             ),
             make_cuda_ext(
                 name='pointnet2_stack_cuda',
-                module='ops.pointnet2.pointnet2_stack',
+                module='cudaext.ops.pointnet2.pointnet2_stack',
                 sources=[
                     'src/pointnet2_api.cpp',
                     'src/ball_query.cpp',
@@ -90,7 +90,7 @@ if __name__ == '__main__':
             ),
             make_cuda_ext(
                 name='pointnet2_batch_cuda',
-                module='ops.pointnet2.pointnet2_batch',
+                module='cudaext.ops.pointnet2.pointnet2_batch',
                 sources=[
                     'src/pointnet2_api.cpp',
                     'src/ball_query.cpp',
@@ -104,5 +104,12 @@ if __name__ == '__main__':
 
                 ],
             ),
+            make_cuda_ext(
+                name='sort_vertices',
+                module='cudaext.ops.Rotated_IoU.cuda_op',
+                sources=[
+                'sort_vert.cpp',
+                'sort_vert_kernel.cu',
+            ]),
         ],
     )
