@@ -19,8 +19,10 @@ def points_in_boxes_cpu(points, boxes):
     points, is_numpy = common_utils.check_numpy_to_torch(points)
     boxes, is_numpy = common_utils.check_numpy_to_torch(boxes)
 
-    point_indices = points.new_zeros((boxes.shape[0], points.shape[0]), dtype=torch.int)
-    roiaware_pool3d_cuda.points_in_boxes_cpu(boxes.float().contiguous(), points.float().contiguous(), point_indices)
+    point_indices = points.new_zeros(
+        (boxes.shape[0], points.shape[0]), dtype=torch.int)
+    roiaware_pool3d_cuda.points_in_boxes_cpu(
+        boxes.float().contiguous(), points.float().contiguous(), point_indices)
 
     return point_indices.numpy() if is_numpy else point_indices
 
@@ -35,8 +37,10 @@ def points_in_boxes_gpu(points, boxes):
     assert boxes.shape[2] == 7 and points.shape[2] == 3
     batch_size, num_points, _ = points.shape
 
-    box_idxs_of_pts = points.new_zeros((batch_size, num_points), dtype=torch.int).fill_(-1)
-    roiaware_pool3d_cuda.points_in_boxes_gpu(boxes.contiguous(), points.contiguous(), box_idxs_of_pts)
+    box_idxs_of_pts = points.new_zeros(
+        (batch_size, num_points), dtype=torch.int).fill_(-1)
+    roiaware_pool3d_cuda.points_in_boxes_gpu(
+        boxes.contiguous(), points.contiguous(), box_idxs_of_pts)
 
     return box_idxs_of_pts
 
@@ -81,15 +85,20 @@ class RoIAwarePool3dFunction(Function):
         num_channels = pts_feature.shape[-1]
         num_pts = pts.shape[0]
 
-        pooled_features = pts_feature.new_zeros((num_rois, out_x, out_y, out_z, num_channels))
-        argmax = pts_feature.new_zeros((num_rois, out_x, out_y, out_z, num_channels), dtype=torch.int)
-        pts_idx_of_voxels = pts_feature.new_zeros((num_rois, out_x, out_y, out_z, max_pts_each_voxel), dtype=torch.int)
+        pooled_features = pts_feature.new_zeros(
+            (num_rois, out_x, out_y, out_z, num_channels))
+        argmax = pts_feature.new_zeros(
+            (num_rois, out_x, out_y, out_z, num_channels), dtype=torch.int)
+        pts_idx_of_voxels = pts_feature.new_zeros(
+            (num_rois, out_x, out_y, out_z, max_pts_each_voxel), dtype=torch.int)
 
         pool_method_map = {'max': 0, 'avg': 1}
         pool_method = pool_method_map[pool_method]
-        roiaware_pool3d_cuda.forward(rois, pts, pts_feature, argmax, pts_idx_of_voxels, pooled_features, pool_method)
+        roiaware_pool3d_cuda.forward(
+            rois, pts, pts_feature, argmax, pts_idx_of_voxels, pooled_features, pool_method)
 
-        ctx.roiaware_pool3d_for_backward = (pts_idx_of_voxels, argmax, pool_method, num_pts, num_channels)
+        ctx.roiaware_pool3d_for_backward = (
+            pts_idx_of_voxels, argmax, pool_method, num_pts, num_channels)
         return pooled_features
 
     @staticmethod
@@ -102,7 +111,8 @@ class RoIAwarePool3dFunction(Function):
         pts_idx_of_voxels, argmax, pool_method, num_pts, num_channels = ctx.roiaware_pool3d_for_backward
 
         grad_in = grad_out.new_zeros((num_pts, num_channels))
-        roiaware_pool3d_cuda.backward(pts_idx_of_voxels, argmax, grad_out.contiguous(), grad_in, pool_method)
+        roiaware_pool3d_cuda.backward(
+            pts_idx_of_voxels, argmax, grad_out.contiguous(), grad_in, pool_method)
 
         return None, None, grad_in, None, None, None
 
