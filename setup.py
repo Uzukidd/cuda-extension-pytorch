@@ -9,7 +9,8 @@ def get_git_commit_number():
     if not os.path.exists('.git'):
         return '0000000'
 
-    cmd_out = subprocess.run(['git', 'rev-parse', 'HEAD'], stdout=subprocess.PIPE)
+    cmd_out = subprocess.run(
+        ['git', 'rev-parse', 'HEAD'], stdout=subprocess.PIPE)
     git_commit_number = cmd_out.stdout.decode('utf-8')[:7]
     return git_commit_number
 
@@ -17,8 +18,9 @@ def get_git_commit_number():
 def make_cuda_ext(name, module, sources):
     cuda_ext = CUDAExtension(
         name='%s.%s' % (module, name),
-        sources=[os.path.join(*module.split('.'), src) for src in sources]
+        sources=[os.path.join(*module.split('.'), src) for src in sources],
     )
+    
     return cuda_ext
 
 
@@ -79,10 +81,10 @@ if __name__ == '__main__':
                     'src/group_points.cpp',
                     'src/group_points_gpu.cu',
                     'src/sampling.cpp',
-                    'src/sampling_gpu.cu', 
-                    'src/interpolate.cpp', 
+                    'src/sampling_gpu.cu',
+                    'src/interpolate.cpp',
                     'src/interpolate_gpu.cu',
-                    'src/voxel_query.cpp', 
+                    'src/voxel_query.cpp',
                     'src/voxel_query_gpu.cu',
                     'src/vector_pool.cpp',
                     'src/vector_pool_gpu.cu'
@@ -108,8 +110,16 @@ if __name__ == '__main__':
                 name='sort_vertices',
                 module='cudaext.ops.Rotated_IoU.cuda_op',
                 sources=[
-                'sort_vert.cpp',
-                'sort_vert_kernel.cu',
-            ]),
+                    'sort_vert.cpp',
+                    'sort_vert_kernel.cu',
+                ]),
+            make_cuda_ext(
+                name='trilinear_interpolate_cuda',
+                module='cudaext.ops.trilinear_interpolate',
+                sources=[
+                    "src/interpolation.cpp",
+                    "src/interpolation_kernel.cu",
+                ]
+            )
         ],
     )
