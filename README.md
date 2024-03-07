@@ -2,7 +2,7 @@
 
 ## Usage
 
-This is a assembly of cuda extension including `Rotated_IoU`, `iou3d_nms`,  `pointnet2`, `roiaware_pool3d` and `roipoint_pool3d`.
+This is a assembly of cuda extension including `Rotated_IoU`, `iou3d_nms`,  `pointnet2`, `roiaware_pool3d`, `roipoint_pool3d` and  `trilinear_interpolation`.
 
 ## Installation
 
@@ -24,5 +24,6 @@ python setup.py develop
 
 ## Sources
 
-- https://github.com/open-mmlab/OpenPCDet
-- https://github.com/lilanxiao/Rotated_IoU
+- [OpenPCDet](https://github.com/open-mmlab/OpenPCDet)
+- [Rotated_IoU](https://github.com/lilanxiao/Rotated_IoU)
+- ### [pytorch-cppcuda-tutorial](https://github.com/kwea123/pytorch-cppcuda-tutorial)
