@@ -5,6 +5,14 @@ from . import trilinear_interpolate_cuda
 class Trilinear_interpolation_cuda(torch.autograd.Function):
     @staticmethod
     def forward(ctx, feats, points):
+        """
+        Inputs:
+            feats: (N, 8, F)
+            points: (N, 3) local coordinates in [-1, 1]
+
+        Outputs:
+            feats_interp: (N, F)
+        """
         feat_interp = trilinear_interpolate_cuda.trilinear_interpolation_fw(
             feats, points)
 
