@@ -23,11 +23,14 @@ class Trilinear_interpolation_cuda(torch.autograd.Function):
     @staticmethod
     def backward(ctx, dL_dfeat_interp):
         feats, points = ctx.saved_tensors
+        N, F = feats.size(0), feats.size(2)
+        dL_dfeats = torch.empty((N, 8, F), device=feats.device)
+        dL_dxyz = torch.zeros((N, 3), device=feats.device)
+        
+        trilinear_interpolate_cuda.trilinear_interpolation_bw(
+            dL_dfeat_interp.contiguous(), feats, points, dL_dfeats, dL_dxyz)
 
-        dL_dfeats = trilinear_interpolate_cuda.trilinear_interpolation_bw(
-            dL_dfeat_interp.contiguous(), feats, points)
-
-        return dL_dfeats, None
+        return dL_dfeats, dL_dxyz
 
 
 def trilinear_interpolation_cpu(feats, points):
