@@ -42,7 +42,7 @@ torch::Tensor trilinear_fw_cu(
     const dim3 threads(16, 16);
     const dim3 blocks((N + threads.x - 1) / threads.x, (F + threads.y - 1) / threads.y);
 
-    AT_DISPATCH_FLOATING_TYPES(feats.type(), "trilinear_fw_cu",
+    AT_DISPATCH_FLOATING_TYPES(feats.scalar_type(), "trilinear_fw_cu",
                                ([&]
                                 { trilinear_fw_kernel<scalar_t><<<blocks, threads>>>(
                                       feats.packed_accessor<scalar_t, 3, torch::RestrictPtrTraits, size_t>(),
@@ -165,7 +165,7 @@ void trilinear_bw_cu(
     const dim3 threads(16, 16);
     const dim3 blocks((N + threads.x - 1) / threads.x, (F + threads.y - 1) / threads.y);
 
-    AT_DISPATCH_FLOATING_TYPES(feats.type(), "trilinear_bw_cu",
+    AT_DISPATCH_FLOATING_TYPES(feats.scalar_type(), "trilinear_bw_cu",
                                ([&]
                                 { trilinear_bw_kernel<scalar_t><<<blocks, threads>>>(
                                       dL_dfeat_interp.packed_accessor<scalar_t, 2, torch::RestrictPtrTraits, size_t>(),
@@ -177,7 +177,7 @@ void trilinear_bw_cu(
     const dim3 threads_reduce(16);
     const dim3 blocks_reduce((N + threads_reduce.x - 1) / threads_reduce.x);
 
-    AT_DISPATCH_FLOATING_TYPES(feats.type(), "dL_feat_dxyz_reduce_cu",
+    AT_DISPATCH_FLOATING_TYPES(feats.scalar_type(), "dL_feat_dxyz_reduce_cu",
                                ([&]
                                 { dL_feat_dxyz_reduce_kernel<scalar_t><<<blocks_reduce, threads_reduce>>>(
                                       feats.packed_accessor<scalar_t, 3, torch::RestrictPtrTraits, size_t>(),
